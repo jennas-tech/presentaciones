@@ -11,8 +11,9 @@ Cada carpeta es una presentación. Se publica con `publicar <carpeta>` y queda e
   puede abrir solo, no va.
 - **Sin video.** Texto, imágenes, diagramas, audio corto. El video pesa y el tope de cortesía
   de GitHub es 1 GB por repo.
-- Las carpetas que empiezan con `_` o `.` no se publican ni aparecen en el índice
-  (`_plantilla/` es el molde para armar una nueva).
+- Las carpetas que empiezan con `_` o `.` no se publican ni aparecen en el índice.
+  Para armar una nueva, copiar `demo/` como punto de partida: ya trae el CSS, la navegación
+  con flechas y la vista de impresión resueltas.
 
 ## Uso
 
