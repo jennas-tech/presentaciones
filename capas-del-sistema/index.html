@@ -206,6 +206,11 @@
     .r{opacity:1;transform:none}
     .slide{transform:none}
   }
+  /* Failsafe: si la página se carga en pestaña oculta (previsualizadores, lectores,
+     impresión a PDF, crawlers) la línea de tiempo no avanza y las animaciones se quedan
+     congeladas en su primer fotograma — el texto quedaría invisible. Con esta clase el
+     contenido se muestra quieto en vez de desaparecer. */
+  html.sin-anim .r{animation:none!important;opacity:1!important;transform:none!important}
   @media print{
     body{overflow:visible;background:#fff;color:#111}
     .bg,.grid,.rail,.nav{display:none}
@@ -380,6 +385,14 @@
     var dx=e.changedTouches[0].clientX-tx;
     if(Math.abs(dx)>50) go(dx<0?i+1:i-1);
   },{passive:true});
+  // Si el documento está oculto, la línea de tiempo de animación no avanza: mostrar
+  // el contenido estático para que nunca dependa de que una animación termine.
+  function sinAnim(){
+    document.documentElement.classList.toggle('sin-anim', document.visibilityState === 'hidden');
+  }
+  sinAnim();
+  document.addEventListener('visibilitychange', sinAnim);
+
   go(0);
 })();
 </script>
