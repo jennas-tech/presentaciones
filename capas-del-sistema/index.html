@@ -8,411 +8,81 @@
 <style>
   :root{
     color-scheme:dark;
-    --bg:#05070b;
-    --ink:#eef2f8;
-    --dim:#8592a6;
-    --acc:#5eead4;
-    --acc2:#38bdf8;
-    --warn:#fbbf24;
-    --bad:#fb7185;
-    --ok:#34d399;
-    --line:rgba(255,255,255,.09);
-    --panel:rgba(255,255,255,.035);
-    --mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,monospace;
-    --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+    --ground:#04070d; --ink:#f2f6ff; --dim:#9fb0cc; --teal:#5fe3c8;
+    --serif:"EB Garamond",Georgia,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   }
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  *{box-sizing:border-box}
   html,body{height:100%;margin:0}
   body{
-    background:var(--bg);color:var(--ink);overflow:hidden;
-    font-family:var(--sans);font-size:clamp(14px,1.15vw,18px);
-    -webkit-font-smoothing:antialiased;
+    background:var(--ground);color:var(--ink);font-family:var(--sans);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:clamp(1rem,3vw,2.5rem);gap:1.1rem;
   }
-
-  /* ── fondo vivo ───────────────────────────────────────────── */
-  .bg{
-    position:fixed;inset:-20%;z-index:0;pointer-events:none;
-    background:
-      radial-gradient(38% 32% at 18% 22%, rgba(94,234,212,.16), transparent 60%),
-      radial-gradient(34% 30% at 82% 76%, rgba(56,189,248,.14), transparent 62%),
-      radial-gradient(30% 26% at 62% 12%, rgba(255,255,255,.05), transparent 65%);
-    filter:blur(30px);
-    animation:drift 26s ease-in-out infinite alternate;
+  .vineta{
+    position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:radial-gradient(120% 90% at 50% 45%,transparent 40%,rgba(0,0,0,.75) 100%);
   }
-  @keyframes drift{
-    0%{transform:translate3d(0,0,0) scale(1)}
-    100%{transform:translate3d(-2.5%,2%,0) scale(1.07)}
-  }
-  .grid{
-    position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.35;
-    background-image:
-      linear-gradient(rgba(255,255,255,.032) 1px,transparent 1px),
-      linear-gradient(90deg,rgba(255,255,255,.032) 1px,transparent 1px);
-    background-size:64px 64px;
-    mask-image:radial-gradient(circle at 50% 45%,#000 25%,transparent 78%);
-  }
-
-  /* ── barra de progreso ────────────────────────────────────── */
-  .rail{position:fixed;top:0;left:0;right:0;height:2px;background:rgba(255,255,255,.06);z-index:20}
-  .rail i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--acc2));
-    box-shadow:0 0 14px rgba(94,234,212,.7);transition:width .5s cubic-bezier(.4,0,.2,1)}
-
-  /* ── diapositivas ─────────────────────────────────────────── */
-  .deck{position:relative;z-index:10;height:100%}
-  .slide{
-    position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
-    padding:clamp(1.6rem,5.2vw,6rem);max-width:1240px;margin:0 auto;width:100%;
-    opacity:0;visibility:hidden;transform:translateY(18px);
-    transition:opacity .5s ease,transform .5s cubic-bezier(.2,.8,.2,1),visibility .5s;
-  }
-  .slide.on{opacity:1;visibility:visible;transform:none}
-
-  .r{opacity:0;transform:translateY(16px)}
-  .slide.on .r{animation:rise .75s cubic-bezier(.2,.85,.25,1) forwards;animation-delay:var(--d,0s)}
-  @keyframes rise{to{opacity:1;transform:none}}
-
-  /* ── tipografía ───────────────────────────────────────────── */
-  .kicker{
-    font-family:var(--mono);font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;
-    color:var(--acc);margin-bottom:1.5rem;display:flex;align-items:center;gap:.7rem;
-  }
-  .kicker::before{content:"";width:1.9rem;height:1px;background:var(--acc);opacity:.6}
+  header{text-align:center;z-index:1}
   h1{
-    font-size:clamp(2.3rem,6.4vw,5.4rem);line-height:.98;letter-spacing:-.045em;
-    font-weight:680;margin:0 0 .55em;max-width:20ch;
+    font-family:var(--serif);font-weight:700;letter-spacing:-.02em;margin:0;
+    font-size:clamp(1.3rem,2.6vw,2.1rem);
   }
-  h2{
-    font-size:clamp(1.6rem,3.5vw,2.9rem);line-height:1.08;letter-spacing:-.032em;
-    font-weight:640;margin:0 0 .85em;max-width:26ch;
+  header p{
+    margin:.35rem 0 0;color:var(--dim);font-size:clamp(.78rem,1.1vw,.92rem);
+    letter-spacing:.16em;text-transform:uppercase;
   }
-  p{color:var(--dim);margin:0 0 1.1em;max-width:54ch;line-height:1.62}
-  p.lead{font-size:1.12em;color:#b9c4d4}
-  em{color:var(--ink);font-style:normal;font-weight:560}
-  .hl{color:var(--acc)}
-  .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
-
-  /* ── portada ──────────────────────────────────────────────── */
-  .big-num{
-    font-family:var(--mono);font-size:clamp(5rem,17vw,15rem);line-height:.82;
-    font-weight:700;letter-spacing:-.06em;
-    background:linear-gradient(160deg,#fff 8%,var(--acc) 55%,var(--acc2) 100%);
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-    margin:0 0 .1em;
+  .marco{
+    position:relative;z-index:1;width:min(1280px,100%);
+    border-radius:14px;overflow:hidden;
+    box-shadow:0 30px 80px rgba(0,0,0,.7),0 0 0 1px rgba(95,227,200,.14);
+    background:#000;
   }
-  .big-num + .cap{font-family:var(--mono);font-size:.8rem;letter-spacing:.24em;
-    text-transform:uppercase;color:var(--dim)}
-
-  /* ── pila de capas ────────────────────────────────────────── */
-  .stack{display:flex;flex-direction:column;gap:.42rem;margin-top:.4rem;max-width:920px}
-  .layer{
-    display:grid;grid-template-columns:2.3rem 1fr;gap:.95rem;align-items:baseline;
-    padding:.62rem .9rem;border-left:2px solid rgba(255,255,255,.13);
-    background:linear-gradient(90deg,var(--panel),transparent 85%);
-    border-radius:0 8px 8px 0;transition:.22s ease;
+  video{display:block;width:100%;height:auto}
+  .rep{
+    position:absolute;inset:0;display:none;place-items:center;
+    background:rgba(4,7,13,.72);cursor:pointer;backdrop-filter:blur(3px);
   }
-  .layer:hover{background:linear-gradient(90deg,rgba(94,234,212,.11),transparent 88%);
-    border-left-color:var(--acc);transform:translateX(4px)}
-  .layer b{font-weight:600;font-size:1.02em;letter-spacing:-.01em}
-  .layer span{color:var(--dim);font-size:.9em}
-  .layer .n{font-family:var(--mono);font-size:.74rem;color:var(--acc);opacity:.75}
-  .layer.miss{border-left-color:rgba(251,191,36,.65)}
-  .layer.miss .n{color:var(--warn)}
-
-  /* ── matriz del eje de respaldo ───────────────────────────── */
-  .matriz{display:flex;flex-direction:column;gap:.34rem;margin-top:.5rem}
-  .fila{
-    display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:center;
-    padding:.5rem .9rem .5rem 1.1rem;border-radius:7px;background:var(--panel);
-    border-left:2px solid transparent;transition:.2s;
+  .rep.on{display:grid}
+  .rep span{
+    font-family:var(--sans);font-size:1rem;letter-spacing:.12em;text-transform:uppercase;
+    border:1px solid rgba(95,227,200,.5);color:var(--teal);
+    padding:.85rem 1.6rem;border-radius:999px;background:rgba(95,227,200,.08);
   }
-  .fila:hover{background:rgba(255,255,255,.06)}
-  .fila .nom{font-size:.95em;font-weight:520}
-  .fila .nom i{font-family:var(--mono);font-style:normal;font-size:.72rem;
-    color:var(--dim);margin-right:.6rem}
-  .chip{
-    font-family:var(--mono);font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;
-    padding:.26rem .6rem;border-radius:999px;white-space:nowrap;
-    border:1px solid currentColor;
+  footer{
+    z-index:1;display:flex;gap:1.4rem;flex-wrap:wrap;justify-content:center;
+    color:#6b7a92;font-size:.78rem;letter-spacing:.06em;
   }
-  .c-ok{color:var(--ok);background:rgba(52,211,153,.09)}
-  .c-warn{color:var(--warn);background:rgba(251,191,36,.09)}
-  .c-bad{color:var(--bad);background:rgba(251,113,133,.1)}
-  .c-mute{color:#6b7789;background:rgba(255,255,255,.02)}
-
-  /* eje vertical */
-  .eje{position:relative;padding-left:2.6rem}
-  .eje::before{
-    content:"";position:absolute;left:1.05rem;top:0;bottom:0;width:1px;
-    background:repeating-linear-gradient(180deg,var(--acc) 0 5px,transparent 5px 11px);
-    opacity:.42;
-  }
-  .eje::after{
-    content:"respaldo";position:absolute;left:-1.15rem;top:50%;
-    transform:rotate(-90deg) translateX(-50%);transform-origin:center;
-    font-family:var(--mono);font-size:.62rem;letter-spacing:.28em;
-    text-transform:uppercase;color:var(--acc);opacity:.6;
-  }
-
-  /* ── huecos ───────────────────────────────────────────────── */
-  .huecos{display:grid;gap:.7rem;margin-top:.6rem;max-width:880px}
-  .hueco{
-    display:grid;grid-template-columns:auto 1fr;gap:1rem;align-items:start;
-    padding:1rem 1.15rem;border-radius:12px;
-    background:linear-gradient(120deg,rgba(251,113,133,.08),rgba(255,255,255,.02));
-    border:1px solid rgba(251,113,133,.24);
-  }
-  .hueco.warn{background:linear-gradient(120deg,rgba(251,191,36,.09),rgba(255,255,255,.02));
-    border-color:rgba(251,191,36,.26)}
-  .hueco.ok{background:linear-gradient(120deg,rgba(52,211,153,.08),rgba(255,255,255,.02));
-    border-color:rgba(52,211,153,.24)}
-  .ico{font-family:var(--mono);font-size:1.05rem;line-height:1.35;color:var(--bad);opacity:.9}
-  .hueco.warn .ico{color:var(--warn)}
-  .hueco.ok .ico{color:var(--ok)}
-  .hueco b{display:block;font-weight:600;margin-bottom:.2em;letter-spacing:-.01em}
-  .hueco span{color:var(--dim);font-size:.9em;line-height:1.5}
-
-  /* ── cierre ───────────────────────────────────────────────── */
-  .cierre{
-    font-size:clamp(1.5rem,3.6vw,3rem);line-height:1.16;letter-spacing:-.035em;
-    font-weight:600;max-width:24ch;margin:0;
-  }
-  .cierre b{color:var(--acc);font-weight:inherit}
-  .firma{margin-top:2.2rem;font-family:var(--mono);font-size:.72rem;letter-spacing:.2em;
-    text-transform:uppercase;color:#5b6678}
-
-  /* ── navegación ───────────────────────────────────────────── */
-  .nav{
-    position:fixed;left:0;right:0;bottom:0;z-index:20;
-    display:flex;justify-content:space-between;align-items:center;gap:1rem;
-    padding:.9rem clamp(1.2rem,4vw,3rem);
-    font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;color:#5b6678;
-    background:linear-gradient(transparent,rgba(5,7,11,.92) 55%);
-  }
-  .dots{display:flex;gap:.42rem}
-  .dot{width:5px;height:5px;border-radius:50%;background:#2b3444;transition:.25s}
-  .dot.on{background:var(--acc);box-shadow:0 0 8px rgba(94,234,212,.7);transform:scale(1.35)}
-  .teclas{opacity:.75}
-  kbd{font-family:var(--mono);background:rgba(255,255,255,.07);border:1px solid var(--line);
-    border-radius:4px;padding:.1em .38em;font-size:.92em}
-
-  @media (max-width:640px){
-    .slide{padding:1.4rem 1.2rem 3.4rem;justify-content:flex-start;padding-top:3.2rem}
-    .eje{padding-left:1.9rem}
-    .eje::after{display:none}
-    .fila{grid-template-columns:1fr;gap:.35rem}
-  }
-  @media (prefers-reduced-motion:reduce){
-    *{animation:none!important;transition:none!important}
-    .r{opacity:1;transform:none}
-    .slide{transform:none}
-  }
-  /* Failsafe: si la página se carga en pestaña oculta (previsualizadores, lectores,
-     impresión a PDF, crawlers) la línea de tiempo no avanza y las animaciones se quedan
-     congeladas en su primer fotograma — el texto quedaría invisible. Con esta clase el
-     contenido se muestra quieto en vez de desaparecer. */
-  html.sin-anim .r{animation:none!important;opacity:1!important;transform:none!important}
-  @media print{
-    body{overflow:visible;background:#fff;color:#111}
-    .bg,.grid,.rail,.nav{display:none}
-    .slide{position:relative;opacity:1;visibility:visible;transform:none;
-      min-height:100vh;page-break-after:always;display:flex!important}
-    .r{opacity:1!important;transform:none!important}
-    p,.layer span,.fila .nom i{color:#444}
-    .big-num{-webkit-text-fill-color:#111;color:#111}
-    .layer,.fila,.hueco{background:#f4f4f4;border-color:#ddd}
-  }
+  footer a{color:#6b7a92;text-decoration:none;border-bottom:1px solid #2a3547;padding-bottom:1px}
+  footer a:hover{color:var(--teal);border-color:var(--teal)}
 </style>
 </head>
 <body>
+<div class="vineta"></div>
 
-<div class="bg"></div>
-<div class="grid"></div>
-<div class="rail"><i id="bar"></i></div>
+<header>
+  <h1>Las ocho capas del sistema</h1>
+  <p>Jennas · noviembre 2026</p>
+</header>
 
-<div class="deck">
-
-  <!-- 1 · portada -->
-  <section class="slide on">
-    <div class="kicker r">Arquitectura · noviembre 2026</div>
-    <h1 class="r" style="--d:.08s">El sistema<br>no es una torre.</h1>
-    <p class="lead r" style="--d:.18s">Ocho capas, ordenadas por una sola pregunta:
-       <em>si esto desaparece, ¿qué se lleva consigo?</em></p>
-  </section>
-
-  <!-- 2 · el error de mirar por pisos -->
-  <section class="slide">
-    <div class="kicker r">La confusión de partida</div>
-    <h2 class="r" style="--d:.06s">El respaldo no es un piso más abajo.</h2>
-    <p class="r" style="--d:.14s">Pensar el sistema como pisos de un edificio deja un mapa que
-      <em>parece completo y no lo está</em>. Porque el respaldo no vive en ningún nivel:
-      <em>atraviesa todos</em>.</p>
-    <p class="r" style="--d:.22s">Cada capa tiene su propia copia, con su propia frescura y su
-      propio modo de falla. La pregunta útil nunca fue <em>dónde está el respaldo</em>, sino
-      <em>qué capa no lo tiene, y cuál de ellas no se puede reconstruir</em>.</p>
-  </section>
-
-  <!-- 3 · las ocho capas -->
-  <section class="slide">
-    <div class="kicker r">La pila real</div>
-    <h2 class="r" style="--d:.04s;margin-bottom:.5em">Ocho capas, en orden de dependencia.</h2>
-    <div class="stack">
-      <div class="layer r" style="--d:.10s"><span class="n">01</span><div><b>Identidad</b>
-        <span> · correo, cuentas, el segundo factor</span></div></div>
-      <div class="layer r" style="--d:.16s"><span class="n">02</span><div><b>Plomería</b>
-        <span> · dominio y DNS: los registros que resuelven los nombres</span></div></div>
-      <div class="layer miss r" style="--d:.22s"><span class="n">03</span><div><b>Modelo</b>
-        <span> · la suscripción que piensa. No se respalda: se sustituye</span></div></div>
-      <div class="layer miss r" style="--d:.28s"><span class="n">04</span><div><b>Runtime de agentes</b>
-        <span> · gateway, perfiles, cron. El sistema operativo del sistema</span></div></div>
-      <div class="layer r" style="--d:.34s"><span class="n">05</span><div><b>Hardware y red</b>
-        <span> · la máquina, la LAN, las otras pantallas de la casa</span></div></div>
-      <div class="layer miss r" style="--d:.40s"><span class="n">06</span><div><b>Llaves</b>
-        <span> · la puerta de todos los respaldos</span></div></div>
-      <div class="layer r" style="--d:.46s"><span class="n">07</span><div><b>Almacenamiento</b>
-        <span> · sincronía, copia externa, espejo local</span></div></div>
-      <div class="layer miss r" style="--d:.52s"><span class="n">08</span><div><b>Salida</b>
-        <span> · voz, visuales, publicaciones. Lo que el mundo ve</span></div></div>
-    </div>
-  </section>
-
-  <!-- 4 · el eje -->
-  <section class="slide">
-    <div class="kicker r">El eje transversal</div>
-    <h2 class="r" style="--d:.04s;margin-bottom:.6em">Una columna cruza las ocho.</h2>
-    <div class="eje">
-      <div class="matriz">
-        <div class="fila r" style="--d:.10s"><span class="nom"><i>01</i>Identidad</span>
-          <span class="chip c-mute">a mano</span></div>
-        <div class="fila r" style="--d:.15s"><span class="nom"><i>02</i>Plomería</span>
-          <span class="chip c-mute">3 registros</span></div>
-        <div class="fila r" style="--d:.20s"><span class="nom"><i>03</i>Modelo</span>
-          <span class="chip c-mute">no aplica</span></div>
-        <div class="fila r" style="--d:.25s"><span class="nom"><i>04</i>Runtime</span>
-          <span class="chip c-ok">1 día / 7 días</span></div>
-        <div class="fila r" style="--d:.30s"><span class="nom"><i>05</i>Hardware y red</span>
-          <span class="chip c-mute">reemplazable</span></div>
-        <div class="fila r" style="--d:.35s"><span class="nom"><i>06</i>Llaves</span>
-          <span class="chip c-ok">diario · 2 copias</span></div>
-        <div class="fila r" style="--d:.40s"><span class="nom"><i>07</i>Almacenamiento</span>
-          <span class="chip c-ok">3 destinos</span></div>
-        <div class="fila r" style="--d:.45s"><span class="nom"><i>08</i>Salida</span>
-          <span class="chip c-bad">sin copia</span></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 5 · huecos -->
-  <section class="slide">
-    <div class="kicker r">Estado medido · hoy</div>
-    <h2 class="r" style="--d:.04s;margin-bottom:.55em">Lo que quedó abierto.</h2>
-    <div class="huecos">
-      <div class="hueco ok r" style="--d:.10s"><span class="ico">✓</span><div>
-        <b>Llaves — cerrado hoy</b>
-        <span>Pasó de mensual a diario y de una copia a dos. El archivo cifrado no guarda su
-          propia llave: si la guardara, el cifrado sería decorativo.</span></div></div>
-      <div class="hueco r" style="--d:.20s"><span class="ico">✗</span><div>
-        <b>Salida — sigue sin copia</b>
-        <span>La capa que produce lo visible es la única con cobertura cero. Se puede rehacer,
-          pero es trabajo perdido, y hoy su horizonte de pérdida es infinito.</span></div></div>
-      <div class="hueco warn r" style="--d:.30s"><span class="ico">!</span><div>
-        <b>Servidor externo — vence el 4 de diciembre</b>
-        <span>Está en pausa, pero el reloj no. Al vencer el período no baja solo: los servicios
-          se detienen y las etiquetas impresas dejan de servir.</span></div></div>
-    </div>
-  </section>
-
-  <!-- 6 · cierre -->
-  <section class="slide">
-    <div class="kicker r">El principio</div>
-    <p class="cierre r" style="--d:.08s">Un sistema se ordena por lo que
-      <b>no se puede reconstruir</b>, no por lo que está más abajo.</p>
-    <div class="firma r" style="--d:.24s">Jennas · 16 · noviembre · 2026</div>
-  </section>
-
+<div class="marco">
+  <video id="v" src="capas.mp4" poster="poster.jpg"
+         autoplay muted playsinline controls preload="auto"></video>
+  <div class="rep" id="rep"><span>Ver de nuevo</span></div>
 </div>
 
-<nav class="nav">
-  <span id="cnt">01 / 06</span>
-  <div class="dots" id="dots"></div>
-  <span class="teclas"><kbd>←</kbd> <kbd>→</kbd> navegar · <kbd>F</kbd> pantalla completa</span>
-</nav>
+<footer>
+  <span>52 s · sin sonido</span>
+  <a href="diapositivas/">ver como diapositivas</a>
+  <a href="capas.mp4" download>descargar</a>
+</footer>
 
 <script>
-(function(){
-  var slides=[].slice.call(document.querySelectorAll('.slide'));
-  var dots=document.getElementById('dots'), bar=document.getElementById('bar'), cnt=document.getElementById('cnt');
-  var i=0;
-  slides.forEach(function(_,n){
-    var d=document.createElement('div');
-    d.className='dot'+(n?'':' on');
-    d.addEventListener('click',function(e){e.stopPropagation();go(n);});
-    dots.appendChild(d);
+  var v = document.getElementById('v'), rep = document.getElementById('rep');
+  v.addEventListener('ended', function(){ rep.classList.add('on'); });
+  rep.addEventListener('click', function(){
+    rep.classList.remove('on'); v.currentTime = 0; v.play();
   });
-  function pad(n){return (n<10?'0':'')+n;}
-  function go(n){
-    i=Math.max(0,Math.min(slides.length-1,n));
-    slides.forEach(function(s,k){
-      s.classList.toggle('on',k===i);
-      if(k===i){ // reinicia las animaciones de entrada
-        s.querySelectorAll('.r').forEach(function(el){
-          el.style.animation='none'; void el.offsetWidth; el.style.animation='';
-        });
-      }
-    });
-    [].forEach.call(dots.children,function(d,k){d.classList.toggle('on',k===i);});
-    cnt.textContent=pad(i+1)+' / '+pad(slides.length);
-    bar.style.width=((i+1)/slides.length*100)+'%';
-    if(window.__vigilar) window.__vigilar();
-    try{ history.replaceState(null, '', '#' + (i + 1)); }catch(_){}
-  }
-  document.addEventListener('keydown',function(e){
-    var k=e.key;
-    if(['ArrowRight','ArrowDown',' ','PageDown','Enter','n'].indexOf(k)>-1){e.preventDefault();go(i+1);}
-    else if(['ArrowLeft','ArrowUp','PageUp','Backspace','p'].indexOf(k)>-1){e.preventDefault();go(i-1);}
-    else if(k==='Home'){e.preventDefault();go(0);}
-    else if(k==='End'){e.preventDefault();go(slides.length-1);}
-    else if(k==='f'||k==='F'){
-      e.preventDefault();
-      if(!document.fullscreenElement){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();}
-      else{document.exitFullscreen&&document.exitFullscreen();}
-    }
-  });
-  document.addEventListener('click',function(e){
-    if(e.target.closest('.nav'))return;
-    if(e.clientX>window.innerWidth*0.55) go(i+1); else go(i-1);
-  });
-  var tx=0;
-  document.addEventListener('touchstart',function(e){tx=e.touches[0].clientX;},{passive:true});
-  document.addEventListener('touchend',function(e){
-    var dx=e.changedTouches[0].clientX-tx;
-    if(Math.abs(dx)>50) go(dx<0?i+1:i-1);
-  },{passive:true});
-  // Si el documento está oculto (o la línea de tiempo de animación no avanza, como pasa
-  // en pestañas de fondo, previsualizadores e impresión a PDF) el contenido quedaría en
-  // opacity:0. Autocorrección: si al segundo y medio una fila sigue invisible, se pasa
-  // todo el documento a modo estático.
-  function sinAnim(){ document.documentElement.classList.add('sin-anim'); }
-  if(document.visibilityState === 'hidden') sinAnim();
-  document.addEventListener('visibilitychange', function(){
-    if(document.visibilityState === 'hidden') sinAnim();
-  });
-  var chk;
-  function vigilar(){
-    clearTimeout(chk);
-    chk = setTimeout(function(){
-      var s = slides[i], rs = s ? s.querySelectorAll('.r') : [], stuck = false;
-      [].forEach.call(rs, function(el){
-        if(parseFloat(getComputedStyle(el).opacity) === 0) stuck = true;
-      });
-      if(stuck) sinAnim();
-    }, 1800);
-  }
-  window.__vigilar = vigilar;
-
-  // Enlace directo a una diapositiva: .../#3
-  var h = parseInt((location.hash || '').replace('#',''), 10);
-  go(isNaN(h) ? 0 : Math.min(slides.length - 1, Math.max(0, h - 1)));
-})();
 </script>
 </body>
 </html>
