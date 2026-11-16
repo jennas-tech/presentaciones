@@ -399,9 +399,12 @@
   function vigilar(){
     clearTimeout(chk);
     chk = setTimeout(function(){
-      var s = slides[i], el = s && s.querySelector('.r');
-      if(el && parseFloat(getComputedStyle(el).opacity) === 0) sinAnim();
-    }, 1500);
+      var s = slides[i], rs = s ? s.querySelectorAll('.r') : [], stuck = false;
+      [].forEach.call(rs, function(el){
+        if(parseFloat(getComputedStyle(el).opacity) === 0) stuck = true;
+      });
+      if(stuck) sinAnim();
+    }, 1800);
   }
   window.__vigilar = vigilar;
 
