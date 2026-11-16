@@ -363,6 +363,7 @@
     cnt.textContent=pad(i+1)+' / '+pad(slides.length);
     bar.style.width=((i+1)/slides.length*100)+'%';
     if(window.__vigilar) window.__vigilar();
+    try{ history.replaceState(null, '', '#' + (i + 1)); }catch(_){}
   }
   document.addEventListener('keydown',function(e){
     var k=e.key;
@@ -408,7 +409,9 @@
   }
   window.__vigilar = vigilar;
 
-  go(0);
+  // Enlace directo a una diapositiva: .../#3
+  var h = parseInt((location.hash || '').replace('#',''), 10);
+  go(isNaN(h) ? 0 : Math.min(slides.length - 1, Math.max(0, h - 1)));
 })();
 </script>
 </body>
