@@ -362,6 +362,7 @@
     [].forEach.call(dots.children,function(d,k){d.classList.toggle('on',k===i);});
     cnt.textContent=pad(i+1)+' / '+pad(slides.length);
     bar.style.width=((i+1)/slides.length*100)+'%';
+    if(window.__vigilar) window.__vigilar();
   }
   document.addEventListener('keydown',function(e){
     var k=e.key;
@@ -385,13 +386,24 @@
     var dx=e.changedTouches[0].clientX-tx;
     if(Math.abs(dx)>50) go(dx<0?i+1:i-1);
   },{passive:true});
-  // Si el documento está oculto, la línea de tiempo de animación no avanza: mostrar
-  // el contenido estático para que nunca dependa de que una animación termine.
-  function sinAnim(){
-    document.documentElement.classList.toggle('sin-anim', document.visibilityState === 'hidden');
+  // Si el documento está oculto (o la línea de tiempo de animación no avanza, como pasa
+  // en pestañas de fondo, previsualizadores e impresión a PDF) el contenido quedaría en
+  // opacity:0. Autocorrección: si al segundo y medio una fila sigue invisible, se pasa
+  // todo el documento a modo estático.
+  function sinAnim(){ document.documentElement.classList.add('sin-anim'); }
+  if(document.visibilityState === 'hidden') sinAnim();
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState === 'hidden') sinAnim();
+  });
+  var chk;
+  function vigilar(){
+    clearTimeout(chk);
+    chk = setTimeout(function(){
+      var s = slides[i], el = s && s.querySelector('.r');
+      if(el && parseFloat(getComputedStyle(el).opacity) === 0) sinAnim();
+    }, 1500);
   }
-  sinAnim();
-  document.addEventListener('visibilitychange', sinAnim);
+  window.__vigilar = vigilar;
 
   go(0);
 })();
